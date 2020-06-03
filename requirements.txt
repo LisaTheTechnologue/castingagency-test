@@ -1,0 +1,7 @@
+alembic
+Flask
+Flask-Migrate
+Flask-Moment
+Flask-SQLAlchemy
+Flask-WTF
+psycopg2
