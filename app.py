@@ -3,8 +3,8 @@ from flask import Flask, request, abort, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 import random
-
-from models import setup_db,Actor,Movie
+from flask_migrate import Migrate
+from models import setup_db,Actor,Movie,db
 
 ACTORS_PER_PAGE = 10
 MOVIES_PER_PAGE = 10
@@ -31,6 +31,8 @@ def paginate_movies(request, selection):
 def create_app(test_config=None):
     # create and configure the app
     app = Flask(__name__)
+    migrate = Migrate(app, db)
+    setup_db(app)
     CORS(app)
 
     @app.after_request
@@ -180,12 +182,12 @@ def create_app(test_config=None):
             abort(422)
 
     # TODO: view detail actor . MODIFY ALL
-    @app.route("/actors/<int:movie_id>/actors")
-    def get_actors_by_movie(movie_id):
+    @app.route("/actors/<int:actor_id>/actors")
+    def get_movies_by_actor(actor_id):
         try:
-            movie_id = movie_id + 1
+            actor_id = actor_id + 1
             selection = Actor.query\
-                                .filter(Actor.movie==movie_id) \
+                                .filter(Actor.movie==actor_id) \
                                 .all()
             actors = Movie.query.all()
             formatted_movies = []
@@ -196,7 +198,7 @@ def create_app(test_config=None):
                             'success': True,
                             'actors': current_actors,
                             'movies': formatted_movies,
-                            'current_movie': movie_id,
+                            'current_movie': actor_id,
                             'total_actors': len(selection)
                             })
         except BaseException:

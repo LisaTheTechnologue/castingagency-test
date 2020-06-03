@@ -2,15 +2,20 @@ import os
 from sqlalchemy import Column, String, Integer, create_engine
 from flask_sqlalchemy import SQLAlchemy
 import json
+from datetime import datetime
 
-database_path = os.environ['DATABASE_URL']
-
+database_path = os.environ.get('DATABASE_URL')
+if not database_path:
+    database_name = "casting"
+    database_path = "postgres://{}:{}@{}/{}".format('postgres','password','localhost:5432', database_name)
+# set DATABASE_URL = "postgres://postgres:password@localhost:5432/casting"
 db = SQLAlchemy()
 '''
 setup_db(app)
     binds a flask application and a SQLAlchemy service
 '''
 def setup_db(app, database_path=database_path):
+    print(database_path)
     app.config["SQLALCHEMY_DATABASE_URI"] = database_path
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
@@ -76,7 +81,7 @@ class Movie(db.Model):
     title = Column(String(64), nullable=False)
     desc =  Column(String(500), nullable=True)
     release_date = Column(db.DateTime, nullable=True,
-        default=db.datetime.utcnow)
+        default=datetime.utcnow)
     actors = db.relationship("Actor",
             secondary="schedule",
             backref=db.backref("movies", lazy="dynamic"),
