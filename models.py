@@ -32,8 +32,8 @@ class Schedule(db.Model):
     id = Column(Integer, primary_key = True)
     actor_id =  Column(Integer, db.ForeignKey("actor.id",ondelete='CASCADE'))
     movie_id = Column(Integer, db.ForeignKey("movie.id",ondelete='CASCADE'))
-    start_time = Column(db.Date, nullable=True)
-    end_time = Column(db.Date, nullable=True)
+    start = Column(db.Date, nullable=True)
+    end = Column(db.Date, nullable=True)
 
 
 '''
