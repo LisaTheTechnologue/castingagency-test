@@ -72,7 +72,7 @@ class Actor(db.Model):
         }
 
 '''
-Category
+Movie
 
 '''
 class Movie(db.Model):

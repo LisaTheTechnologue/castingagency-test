@@ -28,3 +28,6 @@ The Casting Agency models a company that is responsible for creating movies and 
 - One test for success behavior of each endpoint
 - One test for error behavior of each endpoint
 - At least two tests of RBAC for each role
+
+## Auth0
+https://jolisa.auth0.com/authorize?audience=castingagency&response_type=token&client_id=tqqrz85KWCsJYxHwTOLNd080tvOkDCv7&redirect_uri=http://localhost:5000/
