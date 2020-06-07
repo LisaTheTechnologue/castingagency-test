@@ -47,7 +47,7 @@ def create_app(test_config=None):
 
     @app.route("/")
     def index():
-        return render_template('pages/test.html')
+        return render_template('pages/home.html')
 
     '''''''''''
     '  MOVIE  '
@@ -86,7 +86,7 @@ def create_app(test_config=None):
         except:
             abort(422)
 
-    # TODO: submit + search movie
+    # TODO: submit 
     # FormView / submitMovie + searchMovie
     @app.route("/movie", methods=['POST'])
     def create_movie():
@@ -95,6 +95,27 @@ def create_app(test_config=None):
         new_desc = body.get('desc', None)
         new_releasedate = body.get('release_date', None)
         # new_actors = body.get('actors', None)
+        try:
+            movie = Movie(title=new_title,
+                                desc=new_desc,
+                                release_date=new_releasedate
+                                )
+            movie.insert()
+
+            selection = Movie.query.order_by(Movie.id).all()
+            current_movies = paginate_movies(request, selection)
+            return jsonify({'success': True,
+                            'created': movie.id,
+                            'movies': current_movies,
+                            'total_movies': len(selection)
+                            })
+        except:
+            abort(422)
+
+    # TODO : search movie
+    @app.route("/movies/search", methods=['POST'])
+    def search_movies():
+        body = request.get_json()
         search = body.get('searchTerm', None)
         try:
             if search:
@@ -107,22 +128,8 @@ def create_app(test_config=None):
                                 'movies': current_movies,
                                 'total_movies': len(selection.all())
                                 })
-            else:
-                movie = Movie(title=new_title,
-                                    desc=new_desc,
-                                    release_date=new_releasedate,
-                                    actors=new_actors)
-                movie.insert()
-
-                selection = Movie.query.order_by(Movie.id).all()
-                current_movies = paginate_movies(request, selection)
-                return jsonify({'success': True,
-                                'created': movie.id,
-                                'movies': current_movies,
-                                'total_movies': len(selection)
-                                })
         except:
-            abort(422)
+            abort(404)
 
     # TODO: view detail movie 
     @app.route("/movie/<int:movie_id>/actors")
@@ -192,7 +199,7 @@ def create_app(test_config=None):
         except:
             abort(422)
 
-    # TODO: submit + search actor
+    # TODO: submit 
     # FormView / submitActor + searchActor
     @app.route("/actor", methods=['POST'])
     def create_actor():
@@ -200,12 +207,32 @@ def create_app(test_config=None):
         new_name = body.get('name', None)
         new_age = body.get('age', None)
         new_gender = body.get('gender', None)
-        search = body.get('searchTerm', None)
         print("data ok")
+        try:        
+            actor = Actor(name=new_name,
+                            age=new_age,
+                            gender=new_gender)
+            actor.insert()
+
+            selection = Actor.query.order_by(Actor.id).all()
+            current_actors = paginate_actors(request, selection)
+            return jsonify({'success': True,
+                            'created': actor.id,
+                            'actors': current_actors,
+                            'total_actors': len(selection)
+                            })
+        except:
+            abort(422)
+
+    # TODO : search actor
+    @app.route("/actors/search", methods=['POST'])
+    def search_actors():
+        body = request.get_json()
+        search = body.get('searchTerm', None)
         try:
             if search:
                 selection = Actor.query.order_by(Actor.id)\
-                                          .filter(Actor.actor
+                                          .filter(Actor.name
                                                           .ilike('%{}%'
                                                           .format(search)))
                 current_actors = paginate_actors(request, selection)
@@ -213,22 +240,8 @@ def create_app(test_config=None):
                                 'actors': current_actors,
                                 'total_actors': len(selection.all())
                                 })
-            else:
-                actor = Actor(name=new_name,
-                                age=new_age,
-                                gender=new_gender)
-                actor.insert()
-
-                selection = Actor.query.order_by(Actor.id).all()
-                current_actors = paginate_actors(request, selection)
-                return jsonify({'success': True,
-                                'created': actor.id,
-                                'actors': current_actors,
-                                'total_actors': len(selection)
-                                })
         except:
-            abort(422)
-
+            abort(404)   
     # TODO: view detail actor . MODIFY ALL
     @app.route("/actor/<int:actor_id>/movies")
     def get_movies_by_actor(actor_id):
